@@ -12,7 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClassifiedAds.Migrator.Migrations.OpenIddictDb
 {
     [DbContext(typeof(OpenIddictDbContext))]
+<<<<<<<< HEAD:src/IdentityServers/OpenIddict/ClassifiedAds.Migrator/Migrations/OpenIddictDb/20251126095028_Init.Designer.cs
     [Migration("20251126095028_Init")]
+========
+    [Migration("20251220062306_Init")]
+>>>>>>>> 88b74142d451ec0268504dc285d3d96614054dd4:src/IdentityServers/OpenIddict/ClassifiedAds.Migrator/Migrations/OpenIddictDb/20251220062306_Init.Designer.cs
     partial class Init
     {
         /// <inheritdoc />
