@@ -1,17 +1,22 @@
 import { Component, OnInit, TemplateRef } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { RouterModule } from "@angular/router";
 import { FileService } from "../file.service";
 import { Router, ActivatedRoute } from "@angular/router";
 import { IFile } from "../file";
 import { NgModel, NgForm } from "@angular/forms";
 import { IAuditLogEntry } from "src/app/auditlogs/audit-log";
-import { BsModalService } from "ngx-bootstrap/modal";
+import { MatDialog } from "@angular/material/dialog";
 import { GuidEmpty } from "src/app/shared/constants";
+import { MatDialogModule } from "@angular/material/dialog";
 
 @Component({
-    selector: "app-edit-file",
-    templateUrl: "./edit-file.component.html",
-    styleUrls: ["./edit-file.component.css"],
-    standalone: false
+  selector: "app-edit-file",
+  templateUrl: "./edit-file.component.html",
+  styleUrls: ["./edit-file.component.css"],
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterModule, MatDialogModule],
 })
 export class EditFileComponent implements OnInit {
   file: IFile = {
@@ -32,7 +37,7 @@ export class EditFileComponent implements OnInit {
     private fileService: FileService,
     private router: Router,
     private route: ActivatedRoute,
-    private modalService: BsModalService
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -73,7 +78,7 @@ export class EditFileComponent implements OnInit {
     this.fileService.getAuditLogs(this.file.id).subscribe({
       next: (logs) => {
         this.auditLogs = logs;
-        this.modalService.show(template, { class: "modal-xl" });
+        this.dialog.open(template, { width: "90%", maxWidth: "1200px" });
       },
       error: (error) => this.onHttpError(error),
     });

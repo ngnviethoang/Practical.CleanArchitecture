@@ -2,6 +2,7 @@
 using ClassifiedAds.Application.Products.DTOs;
 using ClassifiedAds.CrossCuttingConcerns.Csv;
 using ClassifiedAds.CrossCuttingConcerns.Excel;
+using ClassifiedAds.CrossCuttingConcerns.Tenants;
 using ClassifiedAds.Domain.Identity;
 using ClassifiedAds.Infrastructure.AI;
 using ClassifiedAds.Infrastructure.Csv;
@@ -16,7 +17,7 @@ using ClassifiedAds.Infrastructure.Web.Endpoints;
 using ClassifiedAds.Infrastructure.Web.ExceptionHandlers;
 using ClassifiedAds.Persistence;
 using ClassifiedAds.WebAPI.ConfigurationOptions;
-using ClassifiedAds.WebAPI.Hubs;
+using ClassifiedAds.WebAPI.Configurations;
 using ClassifiedAds.WebAPI.RateLimiterPolicies;
 using ClassifiedAds.WebAPI.Tenants;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -66,7 +67,7 @@ services.AddControllers(configure =>
 {
 });
 
-services.AddSignalR();
+services.AddClassifiedAdsSignalR(appSettings);
 
 services.AddCors(options =>
 {
@@ -94,7 +95,11 @@ services.AddCors(options =>
 
 services.AddDateTimeProvider();
 
-services.AddMultiTenantPersistence(typeof(AdsDbContextMultiTenantConnectionStringResolver), typeof(TenantResolver))
+services.AddScoped<ITenantResolver, TenantResolver>();
+services.AddScoped<IConnectionStringResolver<AdsDbContextMultiTenant>, AdsDbContextMultiTenantConnectionStringResolver>();
+services.AddScoped<IConnectionStringResolver<AdsReadOnlyDbContextMultiTenant>, AdsReadOnlyDbContextMultiTenantConnectionStringResolver>();
+
+services.AddMultiTenantPersistence()
         .AddDomainServices()
         .AddApplicationServices((Type serviceType, Type implementationType, ServiceLifetime serviceLifetime) =>
         {
@@ -301,7 +306,7 @@ app.UseHealthChecks("/healthz", new HealthCheckOptions
 });
 
 app.MapControllers();
-app.MapHub<NotificationHub>("/hubs/notification").RequireCors("SignalRHubs");
+app.MapClassifiedAdsHubs();
 
 app.MapProcessInforEndpoint();
 app.MapThreadPoolInforEndpoint();

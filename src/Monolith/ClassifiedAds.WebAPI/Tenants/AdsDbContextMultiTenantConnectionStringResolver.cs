@@ -31,6 +31,4 @@ public class AdsDbContextMultiTenantConnectionStringResolver : IConnectionString
             return _appSettings.ConnectionStrings.ClassifiedAds;
         }
     }
-
-    public string MigrationsAssembly => string.Empty;
 }

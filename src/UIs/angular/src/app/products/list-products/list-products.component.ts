@@ -1,16 +1,30 @@
 import { Component, OnInit, TemplateRef } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { RouterModule } from "@angular/router";
 
 import { IProduct } from "../product";
 import { ProductService } from "../product.service";
 import { Title } from "@angular/platform-browser";
 import { IAuditLogEntry } from "../../auditlogs/audit-log";
-import { BsModalRef, BsModalService } from "ngx-bootstrap/modal";
+import { MatDialog, MatDialogRef } from "@angular/material/dialog";
 import { NgForm } from "@angular/forms";
+import { StarComponent } from "../../shared/star.component";
+import { DeleteProductComponent } from "../delete-product/delete-product.component";
+import { MatDialogModule } from "@angular/material/dialog";
 
 @Component({
-    templateUrl: "./list-products.component.html",
-    styleUrls: ["./list-products.component.css"],
-    standalone: false
+  templateUrl: "./list-products.component.html",
+  styleUrls: ["./list-products.component.css"],
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    StarComponent,
+    DeleteProductComponent,
+    MatDialogModule,
+  ],
 })
 export class ListProductsComponent implements OnInit {
   pageTitle = "Product List";
@@ -26,21 +40,19 @@ export class ListProductsComponent implements OnInit {
   }
   set listFilter(value: string) {
     this._listFilter = value;
-    this.filteredProducts = this.listFilter
-      ? this.performFilter(this.listFilter)
-      : this.products;
+    this.filteredProducts = this.listFilter ? this.performFilter(this.listFilter) : this.products;
   }
 
   filteredProducts: IProduct[] = [];
   products: IProduct[] = [];
 
-  importCsvModalRef: BsModalRef;
+  importCsvModalRef: MatDialogRef<any>;
   importingFile;
 
   constructor(
     private productService: ProductService,
     private titleService: Title,
-    private modalService: BsModalService
+    private dialog: MatDialog
   ) {
     this.titleService.setTitle("ClassifiedAds Angular - Product");
   }
@@ -62,8 +74,7 @@ export class ListProductsComponent implements OnInit {
   performFilter(filterBy: string): IProduct[] {
     filterBy = filterBy.toLocaleLowerCase();
     return this.products.filter(
-      (product: IProduct) =>
-        product.name.toLocaleLowerCase().indexOf(filterBy) !== -1
+      (product: IProduct) => product.name.toLocaleLowerCase().indexOf(filterBy) !== -1
     );
   }
 
@@ -85,7 +96,7 @@ export class ListProductsComponent implements OnInit {
     this.productService.getAuditLogs(id).subscribe({
       next: (logs) => {
         this.auditLogs = logs;
-        this.modalService.show(template, { class: "modal-xl" });
+        this.dialog.open(template, { width: "90%", maxWidth: "1200px" });
       },
       error: (err) => (this.errorMessage = err),
     });
@@ -121,8 +132,8 @@ export class ListProductsComponent implements OnInit {
 
   openImportCsvModal(template: TemplateRef<any>) {
     this.importingFile = null;
-    this.importCsvModalRef = this.modalService.show(template, {
-      class: "modal-sm",
+    this.importCsvModalRef = this.dialog.open(template, {
+      width: "400px",
     });
   }
 
@@ -140,7 +151,7 @@ export class ListProductsComponent implements OnInit {
     request.subscribe({
       next: (rs) => {
         console.log(rs);
-        this.importCsvModalRef.hide();
+        this.importCsvModalRef.close();
         this.ngOnInit();
       },
       error: (err) => (this.errorMessage = err),

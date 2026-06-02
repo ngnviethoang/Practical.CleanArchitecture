@@ -1,15 +1,20 @@
 import { Component, OnInit, TemplateRef } from "@angular/core";
+import { CommonModule } from "@angular/common";
+import { RouterModule } from "@angular/router";
 import { ActivatedRoute, Router } from "@angular/router";
 
 import { IProduct } from "../product";
 import { ProductService } from "../product.service";
-import { BsModalService } from "ngx-bootstrap/modal";
+import { MatDialog } from "@angular/material/dialog";
 import { IAuditLogEntry } from "../../auditlogs/audit-log";
+import { StarComponent } from "../../shared/star.component";
+import { MatDialogModule } from "@angular/material/dialog";
 
 @Component({
-    templateUrl: "./product-detail.component.html",
-    styleUrls: ["./product-detail.component.css"],
-    standalone: false
+  templateUrl: "./product-detail.component.html",
+  styleUrls: ["./product-detail.component.css"],
+  standalone: true,
+  imports: [CommonModule, RouterModule, StarComponent, MatDialogModule],
 })
 export class ProductDetailComponent implements OnInit {
   pageTitle = "Product Detail";
@@ -21,7 +26,7 @@ export class ProductDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
-    private modalService: BsModalService
+    private dialog: MatDialog
   ) {}
 
   ngOnInit() {
@@ -48,7 +53,7 @@ export class ProductDetailComponent implements OnInit {
     this.productService.getAuditLogs(id).subscribe({
       next: (logs) => {
         this.auditLogs = logs;
-        this.modalService.show(template, { class: "modal-xl" });
+        this.dialog.open(template, { width: "90%", maxWidth: "1200px" });
       },
       error: (err) => (this.errorMessage = err),
     });

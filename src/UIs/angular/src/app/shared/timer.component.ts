@@ -1,10 +1,12 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 
+
 @Component({
-    selector: "app-timer",
-    templateUrl: "./timer.component.html",
-    styleUrls: [],
-    standalone: false
+  selector: "app-timer",
+  templateUrl: "./timer.component.html",
+  styleUrls: [],
+  standalone: true,
+  imports: [],
 })
 export class TimerComponent implements OnInit, OnDestroy {
   interval: any;
